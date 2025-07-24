@@ -91,7 +91,9 @@ class HomePage extends StatelessWidget {
                     child: HomeCard(
                       title: "Danh sách bữa ăn",
                       icon: Icons.list_alt,
-                      onTap: () {},
+                      onTap: () {
+                        context.go('/meal');
+                      },
                     ),
                   ),
                   SizedBox(width: 8),

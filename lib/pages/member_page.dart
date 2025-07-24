@@ -13,6 +13,11 @@ class MemberPage extends StatefulWidget {
 class _MemberPageState extends State<MemberPage> {
   List<Member> members = [];
   bool isLoading = true;
+  //Phần tìm kiếm
+  bool isSearching = false;
+  String searchQuery = '';
+  List<Member> filteredMembers = [];
+
   @override
   void initState() {
     super.initState();
@@ -24,44 +29,105 @@ class _MemberPageState extends State<MemberPage> {
       final data = await MemberService.getMembers();
       setState(() {
         members = data;
+        filteredMembers = data;
         isLoading = false;
       });
     } catch (e) {
-      print("Lỗi khi load members: $e");
       setState(() => isLoading = false);
     }
+  }
+
+  void _filterMembers(String query) {
+    final results = members
+        .where(
+          (member) => member.name.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
+    setState(() {
+      searchQuery = query;
+      filteredMembers = results;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Column(
                 children: [
-                  Text(
-                    "Thành viên nhóm",
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      height: 56, // cố định chiều cao
+                      child: AnimatedSwitcher(
+                        duration: Duration(milliseconds: 200),
+                        child: isSearching
+                            ? TextField(
+                                key: ValueKey('searchField'),
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 12,
+                                  ),
+                                  hintText: 'Tìm kiếm thành viên...',
+                                  suffixIcon: IconButton(
+                                    icon: Icon(Icons.clear, size: 20),
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      setState(() {
+                                        isSearching = false;
+                                        searchQuery = '';
+                                        filteredMembers = members;
+                                      });
+                                    },
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onChanged: _filterMembers,
+                              )
+                            : Row(
+                                key: ValueKey('titleRow'),
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "Thành viên nhóm",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.search, size: 24),
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      setState(() {
+                                        isSearching = true;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
                   ),
-                  Icon(Icons.search, size: 24),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: filteredMembers.length,
+                      itemBuilder: (context, index) {
+                        final member = filteredMembers[index];
+                        return MemberCard(member: member);
+                      },
+                    ),
+                  ),
                 ],
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: members.length,
-                itemBuilder: (context, index) {
-                  final member = members[index];
-                  return MemberCard(member: member);
-                },
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

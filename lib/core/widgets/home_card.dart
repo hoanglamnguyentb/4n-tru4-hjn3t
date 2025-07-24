@@ -1,3 +1,4 @@
+import 'package:an_trua_hinet/core/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class HomeCard extends StatelessWidget {
@@ -15,7 +16,7 @@ class HomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: Colors.greenAccent,
+      splashColor: colorSplash,
       borderRadius: BorderRadius.circular(12),
       onTap: onTap,
       child: Column(

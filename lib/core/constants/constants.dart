@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const colorBlue = Color.fromRGBO(8, 102, 255, 1.0);
+final colorSplash = Colors.grey.withAlpha((0.2 * 255).round());
 const colorBlack = Color.fromRGBO(161, 149, 161, 1);
 const colorGrey = Color.fromRGBO(141, 141, 141, 1.0);
 const colorPurple = Color.fromRGBO(146, 106, 255, 1.0);
