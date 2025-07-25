@@ -1,8 +1,11 @@
 import 'package:an_trua_hinet/core/constants/constants.dart';
+import 'package:an_trua_hinet/core/utils/formatters.dart';
+import 'package:an_trua_hinet/models/meal.dart';
 import 'package:flutter/material.dart';
 
 class MealCard extends StatelessWidget {
-  const MealCard({super.key});
+  final Meal meal;
+  const MealCard({super.key, required this.meal});
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +47,14 @@ class MealCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Bún chả",
+                        meal.note ?? "Bữa ăn",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "70.000 VND",
+                        currencyFormat.format(meal.amount),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -60,7 +63,10 @@ class MealCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Text("Ngày: 20/11/2025", style: TextStyle(color: colorGrey)),
+                  Text(
+                    "Ngày: ${dateFormat.format(meal.date)}",
+                    style: TextStyle(color: colorGrey),
+                  ),
                   Text("Thành viên: 4", style: TextStyle(color: colorGrey)),
                 ],
               ),

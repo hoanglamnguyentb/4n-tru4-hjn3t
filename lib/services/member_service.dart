@@ -11,9 +11,7 @@ class MemberService {
   /// Lấy danh sách tất cả thành viên
   static Future<List<Member>> getMembers() async {
     final response = await _client.from(_tableName).select();
-    print("📥 Supabase response: $response"); // ✅ log kết quả
     final data = response as List;
-
     return data.map((e) => Member.fromMap(e)).toList();
   }
 

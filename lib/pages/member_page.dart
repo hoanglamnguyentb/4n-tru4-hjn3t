@@ -11,7 +11,7 @@ class MemberPage extends StatefulWidget {
 }
 
 class _MemberPageState extends State<MemberPage> {
-  List<Member> members = [];
+  List<Member> _members = [];
   bool isLoading = true;
   //Phần tìm kiếm
   bool isSearching = false;
@@ -26,10 +26,10 @@ class _MemberPageState extends State<MemberPage> {
 
   Future<void> _loadMembers() async {
     try {
-      final data = await MemberService.getMembers();
+      final members = await MemberService.getMembers();
       setState(() {
-        members = data;
-        filteredMembers = data;
+        _members = members;
+        filteredMembers = members;
         isLoading = false;
       });
     } catch (e) {
@@ -38,7 +38,7 @@ class _MemberPageState extends State<MemberPage> {
   }
 
   void _filterMembers(String query) {
-    final results = members
+    final results = _members
         .where(
           (member) => member.name.toLowerCase().contains(query.toLowerCase()),
         )
@@ -53,70 +53,65 @@ class _MemberPageState extends State<MemberPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: AnimatedSwitcher(
+            duration: Duration(milliseconds: 200),
+            child: isSearching
+                ? TextField(
+                    key: ValueKey('searchField'),
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 12,
+                      ),
+                      hintText: 'Tìm kiếm thành viên...',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.clear, size: 20),
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          setState(() {
+                            isSearching = false;
+                            searchQuery = '';
+                            filteredMembers = _members;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onChanged: _filterMembers,
+                  )
+                : Row(
+                    key: ValueKey('titleRow'),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Thành viên nhóm",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.search, size: 24),
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          setState(() {
+                            isSearching = true;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+          ),
+        ),
         body: isLoading
             ? Center(child: CircularProgressIndicator())
             : Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: SizedBox(
-                      height: 56, // cố định chiều cao
-                      child: AnimatedSwitcher(
-                        duration: Duration(milliseconds: 200),
-                        child: isSearching
-                            ? TextField(
-                                key: ValueKey('searchField'),
-                                autofocus: true,
-                                decoration: InputDecoration(
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 12,
-                                  ),
-                                  hintText: 'Tìm kiếm thành viên...',
-                                  suffixIcon: IconButton(
-                                    icon: Icon(Icons.clear, size: 20),
-                                    padding: EdgeInsets.zero,
-                                    onPressed: () {
-                                      setState(() {
-                                        isSearching = false;
-                                        searchQuery = '';
-                                        filteredMembers = members;
-                                      });
-                                    },
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onChanged: _filterMembers,
-                              )
-                            : Row(
-                                key: ValueKey('titleRow'),
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Thành viên nhóm",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.search, size: 24),
-                                    padding: EdgeInsets.zero,
-                                    onPressed: () {
-                                      setState(() {
-                                        isSearching = true;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: ListView.builder(
                       itemCount: filteredMembers.length,
