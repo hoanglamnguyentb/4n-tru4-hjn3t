@@ -1,4 +1,6 @@
 import 'package:an_trua_hinet/models/meal.dart';
+import 'package:an_trua_hinet/models/member.dart';
+import 'package:an_trua_hinet/services/member_service.dart';
 import 'package:an_trua_hinet/services/supabase_client.dart';
 
 class MealService {
@@ -14,7 +16,13 @@ class MealService {
   static Future<List<Meal>> fetchMealsPaginated(int from, int to) async {
     final response = await _client
         .from(_tableName)
-        .select()
+        .select('''
+          *,
+          payer:members!meals_payer_id_fkey(id, name),
+          meal_members (
+            member:members (id, name)
+          )
+        ''')
         .order('date', ascending: false)
         .range(from, to);
 
@@ -49,5 +57,40 @@ class MealService {
       final value = (e['amount'] ?? 0);
       return sum + (value is double ? value.toDouble() : value);
     });
+  }
+
+  static Future<List<Member>> getAvailableMembersForMeal(String mealId) async {
+    final allMembers = await MemberService.getMembers();
+    final joined =
+        await _client
+                .from('meal_members')
+                .select('member_id')
+                .eq('meal_id', mealId)
+            as List;
+    final joinedIds = joined.map((e) => e['member_id']).toSet();
+
+    return allMembers.where((m) => !joinedIds.contains(m.id)).toList();
+  }
+
+  static Future<void> addMembersToMeal(
+    String mealId,
+    List<Member> members,
+  ) async {
+    final inserts = members
+        .map(
+          (m) => {
+            'meal_id': mealId,
+            'member_id': m.id,
+            'amount': 0,
+            'is_paid': false,
+          },
+        )
+        .toList();
+
+    final response = await _client.from('meal_members').insert(inserts);
+
+    if (response.error != null) {
+      throw Exception("Lỗi khi thêm thành viên: ${response.error!.message}");
+    }
   }
 }

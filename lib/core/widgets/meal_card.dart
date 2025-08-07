@@ -2,6 +2,7 @@ import 'package:an_trua_hinet/core/constants/constants.dart';
 import 'package:an_trua_hinet/core/utils/formatters.dart';
 import 'package:an_trua_hinet/models/meal.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MealCard extends StatelessWidget {
   final Meal meal;
@@ -13,7 +14,7 @@ class MealCard extends StatelessWidget {
       splashColor: colorSplash,
       borderRadius: BorderRadius.circular(12),
       onTap: () {
-        print("Click MealCard");
+        context.go('/meal/${meal.id}', extra: meal);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
@@ -67,7 +68,14 @@ class MealCard extends StatelessWidget {
                     "Ngày: ${dateFormat.format(meal.date)}",
                     style: TextStyle(color: colorGrey),
                   ),
-                  Text("Thành viên: 4", style: TextStyle(color: colorGrey)),
+                  Text(
+                    "Thanh toán: ${meal.payer?.name}",
+                    style: TextStyle(color: colorGrey),
+                  ),
+                  Text(
+                    "Thành viên: ${meal.participants.length}",
+                    style: TextStyle(color: colorGrey),
+                  ),
                 ],
               ),
             ),
