@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset('assets/images/avatar.png', height: 48),
                   SizedBox(width: 8),

@@ -1,4 +1,5 @@
 import 'package:an_trua_hinet/models/meal.dart';
+import 'package:an_trua_hinet/pages/Test.dart';
 import 'package:an_trua_hinet/pages/home_page.dart';
 import 'package:an_trua_hinet/pages/login_page.dart';
 import 'package:an_trua_hinet/pages/meal_detail_page.dart';
@@ -12,12 +13,14 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      redirect: (_, __) => '/home', // Redirect root to /home
+      redirect: (_, __) => '/login', // Redirect root to /home
     ),
     GoRoute(path: '/home', builder: (context, state) => const HomePage()),
     GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
     GoRoute(path: '/member', builder: (context, state) => const MemberPage()),
     GoRoute(path: '/meal', builder: (context, state) => const MealPage()),
+
+    GoRoute(path: '/test', builder: (context, state) => const Test()),
     GoRoute(
       path: '/meal/:id',
       name: "mealDetail",

@@ -153,15 +153,18 @@ class _MealDetailPageState extends State<MealDetailPage> {
                 ],
               ),
               const SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: meal.participants.length,
-                  itemBuilder: (context, index) {
-                    final member = meal.participants[index];
-                    return MealDetailMemberCard(member: member);
-                  },
-                ),
+              ...meal.participants.map(
+                (member) => MealDetailMemberCard(member: member),
               ),
+              // Expanded(
+              //   child: ListView.builder(
+              //     itemCount: meal.participants.length,
+              //     itemBuilder: (context, index) {
+              //       final member = meal.participants[index];
+              //       return MealDetailMemberCard(member: member);
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),
